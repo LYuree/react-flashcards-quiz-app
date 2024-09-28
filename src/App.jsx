@@ -1,49 +1,23 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef} from 'react'
 import FlashcardList from './FlashcardList';
 import axios from 'axios';
 import './app.css'
 
-
-const SAMPLE_FLASHCARDS = [
-  {
-    id: 1,
-    question: "What is 2+2?",
-    answer: "4",
-    options : [
-      '2',
-      '3',
-      '4',
-      '5'
-    ]
-  },
-
-  {
-    id: 2,
-    question: "What is 2+2?",
-    answer: "Answer",
-    options : [
-      'Answer',
-      'Answer 1',
-      'Answer 2',
-      'Answer 3'
-    ]
-  },
-
-  {
-    id: 3,
-    question: "Question 2?",
-    answer: "Answer",
-    options : [
-      'Answer',
-      'Answer 1',
-      'Answer 2',
-      'Answer 3'
-    ]
-  }
-];
-
 export default function App() {
-  const [flashcards, setFlashcards] = useState(SAMPLE_FLASHCARDS);
+  // const [flashcards, setFlashcards] = useState(SAMPLE_FLASHCARDS);
+  const [flashcards, setFlashcards] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const categoryEl = useRef();
+
+  useEffect(() => {
+    axios
+    .get('https://opentdb.com/api_category.php')
+    .then(res => {
+        // debugger;
+        setCategories(res.data.trivia_categories);
+      })
+    },[]);
+
   useEffect(() => {
     axios
     .get('https://opentdb.com/api.php?amount=10')
@@ -70,9 +44,31 @@ export default function App() {
     return textArea.value;
   }
 
+  function handleSubmit(e){
+    e.preventDefault();
+  }
+
 
   return (
-    <FlashcardList flashcards={flashcards}></FlashcardList>
+    <>
+    <form action="" className="header" onSubmit={handleSubmit}>
+      <div className="form-group">
+        <label htmlFor="category">Category</label>
+        <select name="" id="category" ref={categoryEl}>
+          {categories.map(category => {
+            return <option value={category.id} key={category.id}>{category.name}</option>
+          })}
+        </select>
+        <label htmlFor=""></label>
+        <input type="number" name="" id="" />
+        <button type="submit"></button>
+        
+      </div>
+    </form>
+      <div className="container">
+        <FlashcardList flashcards={flashcards}></FlashcardList>
+      </div>
+    </>
   );
 }
 
